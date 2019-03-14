@@ -55,6 +55,7 @@ public class Result {
         Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {//通过传递链表和自定义比较器来使用Collections.sort()方法排序链表。
             //降序排序
             public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
+                if(o2.getValue()==o1.getValue()) return o1.getKey().compareTo(o2.getKey());
                 return o2.getValue().compareTo(o1.getValue());//使用自定义比较器，基于entry的值（Entry.getValue()），来排序链表。
             }
         });

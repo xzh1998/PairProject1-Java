@@ -10,6 +10,7 @@ public class Process {
 //    public Process(Result result_class){
 //        resultClass=result_class;
 //    }
+    static Pattern p=Pattern.compile("(^|[^a-zA-Z0-9])([a-zA-Z]{4,}[a-zA-Z0-9]*)");//匹配规则
     public static void read_file(String file_name,String outputFileName, Result resultClass, int CodeMode,int outputSize) {//1 GBK
         MyBufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
@@ -30,17 +31,15 @@ public class Process {
                 i++;
 
                 resultClass.char_count_plus(s.length());//统计字符数
-                s=s.trim();//去掉开头不显示字符
+                s = s.replaceAll("[^\\x00-\\x80]", "");
+                s=trim(s);//去掉开头不显示字符
                 if(s.length()!=0){//若有可显示字符则处理
                     resultClass.line_count_plus();//统计行数
                     process_line_withRegularExpression(s,resultClass);
                 }
-
                 //process_line(s.toCharArray(), resultClass);
             }
-
-
-            System.out.println(i);
+            //System.out.println(i);
             resultClass.char_count_plus(i - 1);//统计换行符 实际行数减一
             //每次读一行结束
 
@@ -85,16 +84,24 @@ public class Process {
         }
     }
 
+    public static String trim(String str) {//切除头尾不可显示字符 ASCII中的33个控制字符和空格（0-32、127）
+        int var1 = str.length();
+        int var2 = 0;
 
+        for (; var2 < var1 && (str.charAt(var2) < 33 || str.charAt(var2) == 127); ++var2) {
+        }
 
-    public static void process_line_withRegularExpression(String str, Result resultClass){
-        Pattern p=Pattern.compile("[a-zA-Z]{4,}[a-zA-Z0-9]*");
+        while (var2 < var1 && (str.charAt(var1 - 1) < 33 || str.charAt(var1 - 1) == 127)) {
+            --var1;
+        }
+        return var2 <= 0 && var1 >= str.length() ? str : str.substring(var2, var1);
+    }
+
+    private static void process_line_withRegularExpression(String str, Result resultClass){
         Matcher m=p.matcher(str);
         while(m.find()) {
-            resultClass.addWord(m.group());
-
-//            if(m.group().toLowerCase().equals("mdqbjjx9s"))
-//            System.out.println(str);
+            //System.out.println(m.group(2));
+            resultClass.addWord(m.group(2));
         }
     }
     //废弃代码
